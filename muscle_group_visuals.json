@@ -1,0 +1,169 @@
+[
+  {
+    "muscle_group": "abductors",
+    "relevant_visuals": [
+      "Gluteus medius",
+      "Tensor fasciae latae"
+    ]
+  },
+  {
+    "muscle_group": "adductors",
+    "relevant_visuals": [
+      "Adductor Longus and Pectineus"
+    ]
+  },
+  {
+    "muscle_group": "anterior deltoid",
+    "relevant_visuals": [
+      "Deltoids"
+    ]
+  },
+  {
+    "muscle_group": "biceps",
+    "relevant_visuals": [
+      "Biceps brachii",
+      "Triceps brachii, long head",
+      "Triceps brachii, medial head"
+    ]
+  },
+  {
+    "muscle_group": "brachioradialis",
+    "relevant_visuals": [
+      "Brachioradialis"
+    ]
+  },
+  {
+    "muscle_group": "calves",
+    "relevant_visuals": [
+      "Gastrocnemius, lateral head",
+      "Gastrocnemius, medial head",
+      "Gastrocnemius (calf)",
+      "Soleus",
+      "Peroneus longus"
+    ]
+  },
+  {
+    "muscle_group": "erector spinae",
+    "relevant_visuals": [
+      "Thoracolumbar fascia",
+      "Lower Trapezius"
+    ]
+  },
+  {
+    "muscle_group": "forearm extensors",
+    "relevant_visuals": [
+      "Extensor  carpi radialis"
+    ]
+  },
+  {
+    "muscle_group": "forearm flexors",
+    "relevant_visuals": [
+      "Flexor carpi radialis",
+      "Flexor carpi ulnaris",
+      "Brachioradialis"
+    ]
+  },
+  {
+    "muscle_group": "gluteal muscles",
+    "relevant_visuals": [
+      "Gluteus maximus",
+      "Gluteus medius",
+      "Tensor fascie latae"
+    ]
+  },
+  {
+    "muscle_group": "hamstrings",
+    "relevant_visuals": [
+      "Biceps fermoris",
+      "Semitendinosus"
+    ]
+  },
+  {
+    "muscle_group": "lateral deltoid",
+    "relevant_visuals": [
+      "Deltoids"
+    ]
+  },
+  {
+    "muscle_group": "latissimus dorsi",
+    "relevant_visuals": [
+      "Lattisimus dorsi",
+      "Thoracolumbar fascia",
+      "Trapezius"
+    ]
+  },
+  {
+    "muscle_group": "lower chest",
+    "relevant_visuals": [
+      "Pectoralis Major"
+    ]
+  },
+  {
+    "muscle_group": "obliques",
+    "relevant_visuals": [
+      "External obliques"
+    ]
+  },
+  {
+    "muscle_group": "posterior deltoid",
+    "relevant_visuals": [
+      "Deltoids"
+    ]
+  },
+  {
+    "muscle_group": "pronators",
+    "relevant_visuals": []
+  },
+  {
+    "muscle_group": "quadriceps",
+    "relevant_visuals": [
+      "Rectus femoris",
+      "Vastus Lateralis",
+      "Vastus Medialis"
+    ]
+  },
+  {
+    "muscle_group": "rectus abdominis",
+    "relevant_visuals": [
+      "Rectus Abdominus",
+      "Rectus Abdominus_lower"
+    ]
+  },
+  {
+    "muscle_group": "supinators",
+    "relevant_visuals": [
+      "Biceps brachii",
+      "Brachioradialis"
+    ]
+  },
+  {
+    "muscle_group": "transverse abdominis",
+    "relevant_visuals": [
+      "Rectus Abdominus",
+      "Rectus Abdominus_lower",
+      "External obliques"
+    ]
+  },
+  {
+    "muscle_group": "trapezius",
+    "relevant_visuals": [
+      "Trapezius",
+      "Lower Trapezius"
+    ]
+  },
+  {
+    "muscle_group": "triceps",
+    "relevant_visuals": [
+      "Triceps Brachii ( long head, lateral head )",
+      "Triceps brachii, long head",
+      "Triceps brachii, medial head"
+    ]
+  },
+  {
+    "muscle_group": "upper chest",
+    "relevant_visuals": [
+      "Pectoralis Major",
+      "Deltoids"
+    ]
+  }
+]

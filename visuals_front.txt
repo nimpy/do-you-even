@@ -1,0 +1,25 @@
+Adductor Longus and Pectineus
+Biceps brachii
+Brachialis
+Brachioradialis
+Deltoids
+Extensor  carpi radialis
+External obliques
+Flexor carpi radialis
+Gastrocnemius (calf)
+Omohyoid
+Pectoralis Major
+Peroneus longus
+Rectus Abdominus
+Rectus Abdominus_lower
+Rectus femoris
+Sartorius
+Serratus Anterior
+Soleus
+Sternocleidomastoid
+Tensor fasciae latae
+Trapezius
+Triceps brachii, long head
+Triceps brachii, medial head
+Vastus Lateralis
+Vastus Medialis
