@@ -1,0 +1,6 @@
+- for a given exercise name from my list, get the appropriate exercise from allExercises.json, and then visualise it
+- add my workouts from 2024
+- use secondary muscles (different colour?)
+- visualise a workout
+- visualise a range of workouts
+- (with workouts) take into account the number of sets, and how many times is the muscle group being targetted between different exercises
