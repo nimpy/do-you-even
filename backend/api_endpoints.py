@@ -2,11 +2,9 @@ import os
 from fastapi import APIRouter, HTTPException, Depends, Header
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-
-from workout_processing import fetch_and_update_workouts
+from workout_processing import WorkoutProcessor
 
 router = APIRouter()
-
 load_dotenv()
 
 def verify_key(x_do_you_even_key: str | None = Header(default=None)):
@@ -19,24 +17,27 @@ def verify_key(x_do_you_even_key: str | None = Header(default=None)):
 VERSION = "20250201_1800"
 
 @router.get("/health")
-def health(key: str = Depends(verify_key)) -> str:
+def health(key: str = Depends(verify_key)) -> JSONResponse:
     ret = {"status": "healthy", "version": VERSION}
     return JSONResponse(ret)
 
-
 @router.get("/get-last-workout")
-async def get_last_workout(key: str = Depends(verify_key)):
+async def get_last_workout(key: str = Depends(verify_key)) -> JSONResponse:
     try:
-        latest_workout = fetch_and_update_workouts()
+        processor = WorkoutProcessor()
+        latest_workout = await processor.fetch_and_update_workouts()
         
         if not latest_workout:
             raise HTTPException(
                 status_code=404,
                 detail="No workouts found or error fetching workouts"
             )
-            
+        
+        # Convert the Pydantic model to dict, handling datetime serialization
+        workout_dict = latest_workout.model_dump(mode='json')
+        
         response = {
-            "workout": latest_workout
+            "workout": workout_dict
         }
         
         return JSONResponse(response)
@@ -46,5 +47,3 @@ async def get_last_workout(key: str = Depends(verify_key)):
             status_code=500,
             detail=f"Error processing request: {str(e)}"
         )
-
-

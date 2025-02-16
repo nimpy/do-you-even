@@ -1,75 +1,66 @@
 import re
+from typing import Optional, List, Tuple
 from datetime import datetime
-from typing import Dict, List, Optional
-from google_doc_communication import GoogleDocsClient
+from models import Workout
+from services.google_docs import GoogleDocsClient
+from services.workout_parser import parse_workout_text
 
-def parse_workout_data(content: str) -> List[Dict]:
-    """Parse workout data from text content"""
-    workouts = []
-    days = re.split(r'\n\s*\n', content.strip())
+class WorkoutProcessor:
+    def __init__(self):
+        self.docs_client = GoogleDocsClient()
 
-    for day in days:
-        lines = day.strip().split('\n')
-        date_line = lines[0]
-        date_match = re.search(r'(\d{8})', date_line)
-        
+    def _extract_date(self, workout_text: str) -> Optional[datetime]:
+        """Extract date from workout text in format YYYYMMDD"""
+        date_match = re.search(r'(\d{8})', workout_text)
         if date_match:
-            date = date_match.group(1)
-            # Convert date string to ISO format
-            date_obj = datetime.strptime(date, '%Y%m%d')
-            iso_date = date_obj.isoformat()
-            
-            location = "home" if "home" in date_line.lower() else "gym"
-            
-            exercises = []
-            for exercise_line in lines[1:]:
-                if not exercise_line.strip():  # Skip empty lines
-                    continue
-                    
-                # Extract exercise name and details
-                parts = exercise_line.split(' ')
-                numbers = re.findall(r'[\d.]+', exercise_line)
-                
-                # Get everything before the first number as the exercise name
-                exercise_name = ' '.join(parts[:next((i for i, p in enumerate(parts) if any(c.isdigit() for c in p)), len(parts))])
-                
-                exercises.append({
-                    "name": exercise_name.strip(),
-                    "sets": len(re.findall(r',', exercise_line)) + 1,
-                    "reps_weights": numbers  # Raw numbers from the exercise line
-                })
-            
-            workouts.append({
-                "date": iso_date,
-                "location": location,
-                "exercises": exercises
-            })
-    
-    return workouts
-
-def fetch_and_update_workouts() -> Optional[Dict]:
-    """
-    Fetch workouts from Google Docs and return the latest workout
-    """
-    try:
-        # Initialize Google Docs client
-        client = GoogleDocsClient()
-        
-        # Fetch document content
-        content = client.read_document()
-        if not content:
-            return None
-            
-        # Parse workouts
-        workouts = parse_workout_data(content)
-        if not workouts:
-            return None
-            
-        # Sort workouts by date and get the latest
-        latest_workout = sorted(workouts, key=lambda x: x["date"], reverse=True)[0]
-        
-        return latest_workout
-        
-    except Exception as e:
-        print(f"Error processing workouts: {str(e)}")
+            try:
+                return datetime.strptime(date_match.group(1), '%Y%m%d')
+            except ValueError:
+                return None
         return None
+
+    def _split_into_workouts(self, content: str) -> List[Tuple[datetime, str]]:
+        """Split content into individual workout texts and their dates"""
+        # Split by blank lines
+        workout_sections = [
+            section.strip()
+            for section in content.split('\n\n')
+            if section.strip()
+        ]
+
+        # Process only sections that start with a date
+        dated_workouts = []
+        for section in workout_sections:
+            date = self._extract_date(section)
+            if date:
+                dated_workouts.append((date, section))
+
+        # Sort by date, newest first
+        return sorted(dated_workouts, key=lambda x: x[0], reverse=True)
+
+    async def fetch_and_update_workouts(self) -> Optional[Workout]:
+        """
+        Fetch workouts from Google Docs and return the latest one
+        """
+        try:
+            # Fetch document content
+            content = self.docs_client.read_document()
+            if not content:
+                print("No content found in document")
+                return None
+
+            # Split into workouts and get the latest one
+            dated_workouts = self._split_into_workouts(content)
+            if not dated_workouts:
+                print("No valid workouts found in content")
+                return None
+
+            # Take the most recent workout and parse it
+            _, latest_workout_text = dated_workouts[0]
+            latest_workout = parse_workout_text(latest_workout_text)
+
+            return latest_workout
+
+        except Exception as e:
+            print(f"Error in fetch_and_update_workouts: {str(e)}")
+            return None

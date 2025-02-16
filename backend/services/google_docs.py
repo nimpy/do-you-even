@@ -1,4 +1,3 @@
-from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from typing import Optional
@@ -41,3 +40,4 @@ class GoogleDocsClient:
         except Exception as e:
             print(f"Error reading document: {str(e)}")
             return None
+
