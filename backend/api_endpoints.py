@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException, Depends, Header
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
+from workout_processing import fetch_and_update_workouts
+
 router = APIRouter()
 
 load_dotenv()
@@ -22,37 +24,27 @@ def health(key: str = Depends(verify_key)) -> str:
     return JSONResponse(ret)
 
 
-@router.post("/get-last-workout")
-async def get_last_workout(key: str = Depends(verify_key)) -> str:
-
-    # TODO remove dummy response
-    response = {
-        "workout": {
-            "date": "2025-02-01T13:00:00",
-            "workout_type": "strength",
-            "exercises": [
-                {
-                    "exercise_name": "squat",
-                    "sets": 3,
-                    "reps": 5,
-                    "weight": 100
-                },
-                {
-                    "exercise_name": "bench press",
-                    "sets": 3,
-                    "reps": 5,
-                    "weight": 100
-                },
-                {
-                    "exercise_name": "deadlift",
-                    "sets": 3,
-                    "reps": 5,
-                    "weight": 100
-                }
-            ]
+@router.get("/get-last-workout")
+async def get_last_workout(key: str = Depends(verify_key)):
+    try:
+        latest_workout = fetch_and_update_workouts()
+        
+        if not latest_workout:
+            raise HTTPException(
+                status_code=404,
+                detail="No workouts found or error fetching workouts"
+            )
+            
+        response = {
+            "workout": latest_workout
         }
-    }    
+        
+        return JSONResponse(response)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing request: {str(e)}"
+        )
 
-    
-    return JSONResponse(response)
 
