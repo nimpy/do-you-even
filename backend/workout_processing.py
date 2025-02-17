@@ -38,7 +38,7 @@ class WorkoutProcessor:
         # Sort by date, newest first
         return sorted(dated_workouts, key=lambda x: x[0], reverse=True)
 
-    async def fetch_and_update_workouts(self) -> Optional[Workout]:
+    async def fetch_latest_workout(self) -> Optional[Workout]:
         """
         Fetch workouts from Google Docs and return the latest one
         """
@@ -62,5 +62,38 @@ class WorkoutProcessor:
             return latest_workout
 
         except Exception as e:
-            print(f"Error in fetch_and_update_workouts: {str(e)}")
+            print(f"Error in fetch_latest_workout: {str(e)}")
             return None
+
+    async def fetch_last_n_workouts(self, n: int = 4) -> List[Workout]:
+        """
+        Fetch the last n workouts from Google Docs
+        """
+        try:
+            # Fetch document content
+            content = self.docs_client.read_document()
+            if not content:
+                print("No content found in document")
+                return []
+
+            # Split into workouts
+            dated_workouts = self._split_into_workouts(content)
+            if not dated_workouts:
+                print("No valid workouts found in content")
+                return []
+
+            # Take the n most recent workouts and parse them
+            workouts = []
+            for _, workout_text in dated_workouts[:n]:
+                try:
+                    workout = parse_workout_text(workout_text)
+                    workouts.append(workout)
+                except Exception as e:
+                    print(f"Error parsing workout: {str(e)}")
+                    continue
+
+            return workouts
+
+        except Exception as e:
+            print(f"Error in fetch_last_n_workouts: {str(e)}")
+            return []
