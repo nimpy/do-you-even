@@ -80,3 +80,35 @@ async def get_last_n_workouts(
             status_code=500,
             detail=f"Error processing request: {str(e)}"
         )
+
+
+
+@router.get("/get-aggregate-workout")
+async def get_aggregate_workout(key: str = Depends(verify_key)) -> JSONResponse:
+    try:
+        processor = WorkoutProcessor()
+        aggregate_workout = await processor.create_aggregate_workout()
+        
+        if not aggregate_workout:
+            raise HTTPException(
+                status_code=404,
+                detail="No workouts found or error creating aggregate workout"
+            )
+        
+        # Convert the Pydantic model to dict
+        workout_dict = aggregate_workout.model_dump(mode='json')
+        
+        response = {
+            "workout": workout_dict,
+            "metadata": {
+                "description": "This workout combines all unique exercises from the last 4 workouts, using the most recent values for each exercise."
+            }
+        }
+        
+        return JSONResponse(response)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing request: {str(e)}"
+        )

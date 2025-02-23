@@ -21,7 +21,7 @@ class Exercise(BaseModel):
     sets: List[Set]
 
 class Workout(BaseModel):
-    date: str  # Changed from datetime to str
+    date: str
     workout_type: WorkoutType
     gym_location: Optional[GymLocation] = None
     exercises: List[Exercise]

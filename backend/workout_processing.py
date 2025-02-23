@@ -1,7 +1,7 @@
 import re
 from typing import Optional, List, Tuple
 from datetime import datetime
-from models import Workout
+from models import Workout, Exercise, Set, WorkoutType
 from services.google_docs import GoogleDocsClient
 from services.workout_parser import parse_workout_text
 
@@ -97,3 +97,43 @@ class WorkoutProcessor:
         except Exception as e:
             print(f"Error in fetch_last_n_workouts: {str(e)}")
             return []
+
+
+    async def create_aggregate_workout(self) -> Optional[Workout]:
+        """
+        Create a workout containing all exercises from the last 4 workouts,
+        using the most recent values for each exercise
+        """
+        try:
+            # Get last 4 workouts
+            recent_workouts = await self.fetch_last_n_workouts(4)
+            if not recent_workouts:
+                return None
+
+            # Dictionary to store most recent exercise data
+            # Key: exercise name, Value: (exercise object, date of workout)
+            latest_exercises = {}
+
+            # Process workouts from newest to oldest
+            for workout in recent_workouts:
+                for exercise in workout.exercises:
+                    # Only keep this exercise if we haven't seen it before
+                    if exercise.name not in latest_exercises:
+                        latest_exercises[exercise.name] = exercise
+
+            # Create new workout with all exercises
+            aggregate_workout = Workout(
+                date=recent_workouts[0].date,  # Use most recent date
+                workout_type=WorkoutType.GYM,  # Default to gym
+                exercises=sorted(latest_exercises.values(), key=lambda x: x.name)  # Sort by name
+            )
+            
+            # Set gym location based on date
+            aggregate_workout.determine_gym_location()
+
+            return aggregate_workout
+
+        except Exception as e:
+            print(f"Error creating aggregate workout: {str(e)}")
+            return None
+
