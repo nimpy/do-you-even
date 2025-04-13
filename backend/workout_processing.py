@@ -124,8 +124,7 @@ class WorkoutProcessor:
             # Create new workout with all exercises
             aggregate_workout = Workout(
                 date=recent_workouts[0].date,  # Use most recent date
-                workout_type=WorkoutType.GYM,  # Default to gym
-                exercises=sorted(latest_exercises.values(), key=lambda x: x.name)  # Sort by name
+                exercises=latest_exercises.values(),
             )
             
             # Set gym location based on date

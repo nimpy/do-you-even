@@ -77,6 +77,7 @@ def display_workout(workout):
             if set_data:
                 st.table(set_data)
         
+        st.markdown(f"**Workout Text:**\n```\n{workout['workout_text']}\n```")
         st.divider()
 
 def format_exercise_for_doc(exercise: Dict) -> str:
@@ -138,7 +139,7 @@ def main():
     
     with tab1:
         if st.button("Fetch Recent Workouts"):
-            st.experimental_rerun()
+            # st.rerun()
         
             workouts = fetch_workouts()
             
