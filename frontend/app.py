@@ -49,6 +49,31 @@ def fetch_aggregate_workout():
         st.error(f"Error fetching aggregate workout: {str(e)}")
         return None
 
+@st.cache_data()
+def fetch_suggested_location_and_workout_type():
+    """Fetch suggested location and workout type from the API"""
+    headers = {
+        "x-do-you-even-key": API_KEY
+    }
+    
+    try:
+        response = requests.get(
+            f"{API_URL}/get-suggested-location-and-workout-type",
+            headers=headers
+        )
+        response.raise_for_status()
+        data = response.json()
+        return {
+            "location": data["suggested_location"],
+            "workout_type": data["suggested_workout_type"]
+        }
+    except Exception as e:
+        st.error(f"Error fetching suggestions: {str(e)}")
+        return {
+            "location": "Dok Noord",
+            "workout_type": "lower"
+        }
+
 def format_date(date_str):
     """Format date string to a more readable format"""
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
@@ -94,11 +119,11 @@ def format_exercise_for_doc(exercise: Dict) -> str:
     
     return f"{name}{difficulty_str} {reps_str}"
 
-def generate_workout_text(exercises: List[Dict], location: str) -> str:
+def generate_workout_text(exercises: List[Dict], location: str, workout_type: str) -> str:
     """Generate the complete workout text"""
     current_date = datetime.now().strftime("%Y%m%d")
     
-    workout_lines = [f"{current_date} -- {location}"]
+    workout_lines = [f"{current_date} -- {location} -- {workout_type}"]
     workout_lines.extend(
         format_exercise_for_doc(exercise)
         for exercise in exercises
@@ -153,18 +178,46 @@ def main():
     with tab2:
         st.header("Create New Workout")
         
+        # Fetch suggestions for location and workout type
+        suggestions = fetch_suggested_location_and_workout_type()
+        
         # Fetch aggregate workout to get exercise list
         aggregate_workout = fetch_aggregate_workout()
         if not aggregate_workout:
             st.warning("Could not load exercises. Please try again.")
             return
         
-        # Location selection
-        col1, col2 = st.columns([2, 1])
+        # Location and workout type selection
+        col1, col2 = st.columns(2)
+        
         with col1:
+            # Map API location names to UI options
+            location_mapping = {
+                "Dok Noord": "gym (Dok Noord)",
+                "Overpoort": "gym (Overpoort)",
+                "at home": "gym (at home)"
+            }
+            
+            location_options = ["gym (Dok Noord)", "gym (Overpoort)", "gym (at home)"]
+            suggested_location_ui = location_mapping.get(suggestions["location"], "gym (Dok Noord)")
+            default_location_index = location_options.index(suggested_location_ui)
+            
             location = st.radio(
                 "Select workout location:",
-                ["gym (Dok Noord)", "gym (Overpoort)", "gym (at home)"],
+                location_options,
+                index=default_location_index,
+                horizontal=True
+            )
+        
+        with col2:
+            workout_type_options = ["upper", "lower", "full body"]
+            suggested_workout_type = suggestions["workout_type"]
+            default_workout_type_index = workout_type_options.index(suggested_workout_type) if suggested_workout_type in workout_type_options else 0
+            
+            workout_type = st.radio(
+                "Select workout type:",
+                workout_type_options,
+                index=default_workout_type_index,
                 horizontal=True
             )
         
@@ -208,7 +261,8 @@ def main():
                 
                 st.session_state.workout_text = generate_workout_text(
                     ordered_exercises,
-                    location
+                    location,
+                    workout_type
                 )
         
         # Display and copy text
